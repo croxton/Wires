@@ -98,23 +98,23 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 
 					<label for="price_min">Min price</label>
 					<select name="price_min" id="price_min">
-						<option value="100"{if '100' == '{price_min}'} selected="selected"{/if}>100</option>
-						<option value="200"{if '200' == '{price_min}'} selected="selected"{/if}>200</option>
-						<option value="300"{if '200' == '{price_min}'} selected="selected"{/if}>300</option>
+						<option value="100"{if "100" == "{price_min}"} selected="selected"{/if}>100</option>
+						<option value="200"{if "200" == "{price_min}"} selected="selected"{/if}>200</option>
+						<option value="300"{if "200" == "{price_min}"} selected="selected"{/if}>300</option>
 					</select>
 
 					<label for="price_max">Max price</label>
 					<select name="price_max" id="price_max">
-						<option value="100"{if '100' == '{price_max}'} selected="selected"{/if}>100</option>
-						<option value="200"{if '200' == '{price_max}'} selected="selected"{/if}>200</option>
-						<option value="300"{if '300' == '{price_max}'} selected="selected"{/if}>300</option>
+						<option value="100"{if "100" == "{price_max}"} selected="selected"{/if}>100</option>
+						<option value="200"{if "200" == "{price_max}"} selected="selected"{/if}>200</option>
+						<option value="300"{if "300" == "{price_max}"} selected="selected"{/if}>300</option>
 					</select>
 
 					<label for="color">Color</label>
 					<select name="color" id="color">
-						<option value="red"{if 'red' == '{color}'} selected="selected"{/if}>Red</option>
-						<option value="blue"{if 'blue' == '{color}'} selected="selected"{/if}>Blue</option>
-						<option value="green"{if 'green' == '{color}'} selected="selected"{/if}>Green</option>
+						<option value="red"{if "red" == "{color}"} selected="selected"{/if}>Red</option>
+						<option value="blue"{if "blue" == "{color}"} selected="selected"{/if}>Blue</option>
+						<option value="green"{if "green" == "{color}"} selected="selected"{/if}>Green</option>
 					</select>
 
 					<label for="search">Search</label>
@@ -122,14 +122,14 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 
 					<label for="orderby">Order by</label>
 					<select name="orderby" id="orderby">
-						<option value="price"{if 'price' == '{orderby}'} selected="selected"{/if}>Price</option>
-						<option value="title"{if 'title' == '{orderby}'} selected="selected"{/if}>Title</option>
+						<option value="price"{if "price" == "{orderby}"} selected="selected"{/if}>Price</option>
+						<option value="title"{if "title" == "{orderby}"} selected="selected"{/if}>Title</option>
 					</select>
 
 					<label for="sort">Sort</label>
 					<select name="sort" id="sort">
-						<option value="asc"{if 'asc' == '{sort}'} selected="selected"{/if}>Ascending</option>
-						<option value="desc"{if 'desc' == '{sort}'} selected="selected"{/if}>Descending</option>
+						<option value="asc"{if "asc" == "{sort}"} selected="selected"{/if}>Ascending</option>
+						<option value="desc"{if "desc" == "{sort}"} selected="selected"{/if}>Descending</option>
 					</select>
 
 				</fieldset>

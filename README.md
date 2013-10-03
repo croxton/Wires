@@ -68,9 +68,9 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 			field:color:default_out=""
 
 			{!-- 'search' --}
-			field:color="single"
-			field:color:default_in=""
-			field:color:default_out=""
+			field:search="single"
+			field:search:default_in=""
+			field:search:default_out=""
 
 		    {!-- 'orderby' --}
 		    field:orderby="single"

@@ -773,10 +773,10 @@ We'll use to output options in the form and map category ids to category url tit
 	field:color:default_in="any"
 	field:color:default_out=""
 
-	{!-- 'search' --}
-	field:color="single"
-	field:color:default_in=""
-	field:color:default_out=""
+	{!-- 'search'search --}
+	field:search="single"
+	field:search:default_in=""
+	field:search:default_out=""
 
     {!-- 'orderby' --}
     field:orderby="single"

@@ -16,6 +16,7 @@ class Wires {
 
 	protected $map_delimter = ":";
 	protected $map_glue = ";";
+	protected $ee_uri;
 	
 	/** 
 	 * Constructor
@@ -27,6 +28,14 @@ class Wires {
 	{
 		$this->EE = get_instance();
 
+		// for Router/Freebie compatibility, we need to 
+		// fetch the *unadulterated* URI of the current page
+		$this->ee_uri = new EE_URI;
+		$this->ee_uri->_fetch_uri_string(); 
+		$this->ee_uri->_remove_url_suffix();
+		$this->ee_uri->_explode_segments();
+		$this->ee_uri->_reindex_segments();
+
 		// url
 		if (FALSE == $url = $this->EE->TMPL->fetch_param('url', false))
 		{
@@ -37,8 +46,6 @@ class Wires {
 
 		// configure fields
 		$f = array();
-
-		#searchprint_r($this->EE->TMPL->tagparams);
 
 		foreach ($this->EE->TMPL->tagparams as $key => $value)
 		{
@@ -222,7 +229,7 @@ class Wires {
 				{
 					if (FALSE !== strpos($url_parts[$i], LD.$key.RD))
 					{
-						$field['value'] = $this->EE->uri->segment($i+1); // FALSE if non-existent
+						$field['value'] = $this->ee_uri->segment($i+1); // FALSE if non-existent
 						$field['segment'] = TRUE;
 						break;
 					}
@@ -399,8 +406,6 @@ class Wires {
 
 			$f = $f + $extra;
 		}
-
-		#print_r($f);
 
 		// build an array to replace into the template
 		$view = array();

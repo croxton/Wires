@@ -44,46 +44,46 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 		{exp:wires url="products/search/{category}/{price}/{color}/{order_by}/{sort}/?search={search}" parse="inward"
 			
 			{!-- 'category' --}
-			field:category="multiple"
-			field:category:match="#^[0-9]+$#"
-			field:category:default_in="any"
-			field:category:default_out=""
-			field:category:delimiter_in="-or-"
-			field:category:delimiter_out="|"
-			field:category:map="{exp:stash:get_list name='categories' backspace='1'}{category_url_title}:{category_id};{/exp:stash:get_list}"
+			+category="multiple"
+			+category:match="#^[0-9]+$#"
+			+category:default_in="any"
+			+category:default_out=""
+			+category:delimiter_in="-or-"
+			+category:delimiter_out="|"
+			+category:map="{exp:stash:get_list name='categories' backspace='1'}{category_url_title}:{category_id};{/exp:stash:get_list}"
 
 			{!-- 'price' (price_min and price_max fields) --}
-			field:price="range"
-			field:price:default_in="any-price"
-			field:price:default_out=""
-			field:price:delimiter_in="-to-"
-			field:price:delimiter_out=";"
-			field:price:from="at-least-"
-			field:price:to="at-most-"
+			+price="range"
+			+price:default_in="any-price"
+			+price:default_out=""
+			+price:delimiter_in="-to-"
+			+price:delimiter_out=";"
+			+price:from="at-least-"
+			+price:to="at-most-"
 
 			{!-- 'color' --}
-			field:color="single"
-			field:color:match="#^[A-Za-z-_ ]+$#"
-			field:color:default_in="any"
-			field:color:default_out=""
+			+color="single"
+			+color:match="#^[A-Za-z-_ ]+$#"
+			+color:default_in="any"
+			+color:default_out=""
 
 			{!-- 'search' --}
-			field:search="single"
-			field:search:default_in=""
-			field:search:default_out=""
+			+search="single"
+			+search:default_in=""
+			+search:default_out=""
 
 		    {!-- 'orderby' --}
-		    field:orderby="single"
-		    field:orderby:match="#^title$|^price$#"
-		    field:orderby:default_in="sort_by_price"
-		    field:orderby:default_out="price"
-		    field:orderby:map="sort_by_title:title;sort_by_price:price"
+		    +orderby="single"
+		    +orderby:match="#^title$|^price$#"
+		    +orderby:default_in="sort_by_price"
+		    +orderby:default_out="price"
+		    +orderby:map="sort_by_title:title;sort_by_price:price"
 
 		    {!-- 'sort' --}
-		    field:sort="single"
-		    field:sort:match="#^asc$|^desc$#"
-		    field:sort:default_in="asc"
-		    field:sort:default_out="asc"
+		    +sort="single"
+		    +sort:match="#^asc$|^desc$#"
+		    +sort:default_in="asc"
+		    +sort:default_out="asc"
 		}
 			<form action="" method="post">
 

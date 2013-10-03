@@ -2,7 +2,7 @@
 
 $plugin_info = array(
   'pi_name' => 'Wires',
-  'pi_version' =>'1.0.0',
+  'pi_version' =>'1.0.1',
   'pi_author' =>'Mark Croxton',
   'pi_author_url' => 'http://www.hallmark-design.co.uk/',
   'pi_description' => 'Wire up your forms to your URI segments. Search and filter entries with clean, readable uris.',
@@ -17,7 +17,9 @@ class Wires {
 	protected $map_delimter = ":";
 	protected $map_glue = ";";
 	protected $ee_uri;
-	
+	protected $id = 'default';
+	protected static $cache = array();
+
 	/** 
 	 * Constructor
 	 *
@@ -28,6 +30,28 @@ class Wires {
 	{
 		$this->EE = get_instance();
 
+		// a unique ID for the form
+		$this->id = $this->EE->TMPL->fetch_param('id', $this->id);
+
+		if (isset(self::$cache[$this->id]))
+		{
+			// parse template with cached view data
+			$this->return_data = $this->parse_view(self::$cache[$this->id]);
+		}
+		else
+		{
+			$this->return_data = $this->form();
+		}
+	}
+	
+	/** 
+	 * Constructor
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function form() 
+	{
 		// for Router/Freebie compatibility, we need to 
 		// fetch the *unadulterated* URI of the current page
 		$this->ee_uri = new EE_URI;
@@ -415,12 +439,43 @@ class Wires {
 			$view[0][$key] = $field['value'];
 		}
 
+		// cache the view data for later parsing
+		self::$cache[$this->id] = $view;
+
+		// parse template
+		$output = $this->parse_view($view);
+
+		return $output;
+
+	}
+
+
+	// ---------------------------------------------------------
+	
+	/**
+	 * Replace variables in the template tagdata
+	 *
+	 * @access protected
+	 * @return string	
+	 */ 
+	protected function parse_view($view)
+	{
+		$prefix	= $this->EE->TMPL->fetch_param('prefix');
+		$output = $this->EE->TMPL->tagdata;
+
 		// parse template variables
-		$this->return_data = $this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, $view);
+		$output = $this->EE->TMPL->parse_variables($output, $view);
 
-		// prep in conditionals
-		$this->return_data = $this->_prep_in_conditionals($this->return_data);
+		// prep IN conditionals
+		$output = $this->_prep_in_conditionals($output);
 
+		// un-prefix common variables
+		if (FALSE !== $prefix)
+		{
+			$output = $this->_un_prefix($prefix, $output);
+		}
+
+		return $output;
 	}
 
 	// ---------------------------------------------------------
@@ -732,6 +787,30 @@ class Wires {
 		}
 		return $tagdata;
 	}
+
+
+	// ---------------------------------------------------------
+	
+	/**
+	 * remove a given prefix from common variables in the template tagdata
+	 * 
+	 * @access public
+	 * @param string $prefix
+	 * @param string $template
+	 * @return String	
+	 */ 
+	function _un_prefix($prefix, $template)
+	{
+		// remove prefix
+		$common = array('count', 'absolute_count', 'total_results', 'switch', 'no_results');
+
+		foreach($common as $muck)
+		{
+			 $template = str_replace($prefix.':'.$muck, $muck,  $template);
+		}
+
+		return $template;
+	}
 	
 	// usage instructions
 	public function usage() 
@@ -755,7 +834,10 @@ We'll use to output options in the form and map category ids to category url tit
 {/exp:stash:set_list}
 
 {!-- connect the wires --}
-{exp:wires url="products/search/{category}/{price}/{color}/{order_by}/{sort}/?search={search}" parse="inward"
+{exp:wires 
+	url="products/search/{category}/{price}/{color}/{order_by}/{sort}/?search={search}" 
+	prefix="search"
+	parse="inward"
 	
 	{!-- 'category' --}
 	+category="multiple"
@@ -862,7 +944,28 @@ We'll use to output options in the form and map category ids to category url tit
         status="open"
         disable="member_data"
     }
-        <a href="{title_permalink='products'}">{title}</a><br>
+        {if search:no_results}
+            No results
+        {/if}
+        {if search:count==1}
+        <table class="results">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+        {/if}
+                <tr class="results-row{search:switch='|-alt'}">
+                    <td><a href="{title_permalink='products'}">{title}</a></td>
+                    <td>{cf_price}</td>
+                </tr>
+        {if search:count==search:total_results}    
+            </tbody>
+        </table>
+        {/if}
+
     {/exp:low_search:results}
 {/exp:wires}
 

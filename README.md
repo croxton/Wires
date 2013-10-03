@@ -2,7 +2,7 @@
 
 * Author: [Mark Croxton](http://hallmark-design.co.uk/)
 
-## Version 1.0.0 (beta)
+## Version 1.0.1 (beta)
 
 * Requires: ExpressionEngine 2
 
@@ -41,7 +41,10 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 		{/exp:stash:set_list}
 
 		{!-- connect the wires --}
-		{exp:wires url="products/search/{category}/{price}/{color}/{order_by}/{sort}/?search={search}" parse="inward"
+		{exp:wires 
+			url="products/search/{category}/{price}/{color}/{order_by}/{sort}/?search={search}" 
+			prefix="search"
+			parse="inward"
 			
 			{!-- 'category' --}
 			+category="multiple"
@@ -148,6 +151,26 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 		        status="open"
 		        disable="member_data"
 		    }
-		        <a href="{title_permalink='products'}">{title}</a><br>
+		        {if search:no_results}
+		            No results
+		        {/if}
+		        {if search:count==1}
+		        <table class="results">
+		            <thead>
+		                <tr>
+		                    <th>Product</th>
+		                    <th>Price</th>
+		                </tr>
+		            </thead>
+		            <tbody>
+		        {/if}
+		                <tr class="results-row{search:switch='|-alt'}">
+		                    <td><a href="{title_permalink='products'}">{title}</a></td>
+		                    <td>{cf_price}</td>
+		                </tr>
+		        {if search:count==search:total_results}    
+		            </tbody>
+		        </table>
+		        {/if}
 		    {/exp:low_search:results}
 		{/exp:wires}

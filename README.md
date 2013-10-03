@@ -8,7 +8,7 @@
 
 ## Description
 
-Wire up your forms to URI segments. Search, filter sort and order entries with clean, readable uris.
+Wire up your forms to URI segments. Search, filter sort and order entries with clean, friendly uris that can be cached and bookmarked.
 
 ## Features
 

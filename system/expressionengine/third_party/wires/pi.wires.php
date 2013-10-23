@@ -756,6 +756,9 @@ class Wires {
 	
 	/**
 	 * Prep {if var IN (array)} conditionals
+	 * 
+	 * Used with the permission of Lodewijk Schutte
+	 * http://gotolow.com/addons/low-search
 	 *
 	 * @access private
 	 * @param string $tagdata
@@ -772,8 +775,6 @@ class Wires {
 				$andor	 = $matches[6][$key] ? ' AND ' : ' OR ';
 				$items	 = preg_replace('/(&(amp;)?)+/', '|', $matches[7][$key]);
 				$cond	 = array();
-
-				#echo $items;
 
 				foreach (explode('|', $items) as $right)
 				{

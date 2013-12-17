@@ -19,8 +19,8 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 
 ## Installation
 
-1. Create a folder called 'wires' inside ./system/expressionengine/third_party/
-2. Move the file pi.wires.php into the folder
+1. Download [Wires](https://github.com/croxton/Wires/archive/master.zip) and un-zip
+2. Move the folder 'wires' into ./system/expressionengine/third_party/
 
 ##Tags:
 

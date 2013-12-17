@@ -1,13 +1,13 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-$plugin_info = array(
-  'pi_name' => 'Wires',
-  'pi_version' =>'1.0.1',
-  'pi_author' =>'Mark Croxton',
-  'pi_author_url' => 'http://www.hallmark-design.co.uk/',
-  'pi_description' => 'Wire up your forms to your URI segments. Search and filter entries with clean, readable uris.',
-  'pi_usage' => Wires::usage()
-  );
+/**
+ * Wire up your forms to your URI segments. Search and filter entries with clean, readable uris.
+ *
+ * @package             Wires
+ * @author              Mark Croxton (mcroxton@hallmark-design.co.uk)
+ * @copyright           Copyright (c) 2013 Hallmark Design
+ * @link                http://hallmark-design.co.uk
+ */
 
 class Wires {
 	
@@ -18,6 +18,7 @@ class Wires {
 	protected $map_glue = ";";
 	protected $ee_uri;
 	protected $id = 'default';
+	protected $action;
 	protected static $cache = array();
 
 	/** 
@@ -31,15 +32,19 @@ class Wires {
 		$this->EE = get_instance();
 
 		// a unique ID for the form
-		$this->id = $this->EE->TMPL->fetch_param('id', $this->id);
-
+		if (FALSE === $this->id = $this->EE->TMPL->fetch_param('id', $this->id))
+		{
+			$this->EE->output->show_user_error('general', 'The id parameter is required');
+		}
+		
 		if (isset(self::$cache[$this->id]))
 		{
 			// parse template with cached view data
 			$this->return_data = $this->parse_view(self::$cache[$this->id]);
 		}
 		else
-		{
+		{	
+			// process form
 			$this->return_data = $this->form();
 		}
 	}
@@ -61,12 +66,18 @@ class Wires {
 		$this->ee_uri->_reindex_segments();
 
 		// url
-		if (FALSE == $url = $this->EE->TMPL->fetch_param('url', false))
+		if (FALSE == $url = $this->EE->TMPL->fetch_param('url', FALSE))
 		{
 			$this->EE->output->show_user_error('general', 'The url parameter is required');
 		}
 
+		// strip hostname, if present
+		$url = parse_url($url, PHP_URL_PATH);
+
 		$url_parts = explode('/', rtrim(preg_replace('/\?.*/', '', $url),'/'));
+
+		// form action, default to current url
+		$this->action = $this->EE->TMPL->fetch_param('action', '{current_url}');
 
 		// configure fields
 		$f = array();
@@ -92,14 +103,16 @@ class Wires {
 					$f[$field_key[0]]['type'] = $value;
 				}
 			}	
-		}		
+		}	
 
-		// has data been POSTed?
-		if (count($_POST) > 0)
-		{
+		// has the form been posted?
+		$id = $this->EE->input->post('id');
+
+		if ($id === $this->id)
+		{	
 			/* ================================================================
 			   Form has been submitted
-			   ================================================================ */
+			   ================================================================ */   
 
 			foreach($f as $key => &$field)
 			{
@@ -443,7 +456,7 @@ class Wires {
 		self::$cache[$this->id] = $view;
 
 		// parse template
-		$output = $this->parse_view($view);
+		$output = $this->parse_view($view, TRUE);
 
 		return $output;
 
@@ -458,7 +471,7 @@ class Wires {
 	 * @access protected
 	 * @return string	
 	 */ 
-	protected function parse_view($view)
+	protected function parse_view($view, $form=FALSE)
 	{
 		$prefix	= $this->EE->TMPL->fetch_param('prefix');
 		$output = $this->EE->TMPL->tagdata;
@@ -473,6 +486,22 @@ class Wires {
 		if (FALSE !== $prefix)
 		{
 			$output = $this->_un_prefix($prefix, $output);
+		}
+
+		// enclose in a form?
+		if ($form)
+		{	
+			$form_details = array(
+			    'action'          => $this->action,
+			    'name'            => 'upload',
+			    'hidden_fields'   => array('id' => $this->id),
+			    'class'           => $this->EE->TMPL->form_class,
+			    'secure'          => TRUE
+			);
+
+			$form_open = $this->EE->functions->form_declaration($form_details);
+			$form_close = "</form>";
+			$output  = $form_open . $output . $form_close;
 		}
 
 		return $output;
@@ -756,6 +785,9 @@ class Wires {
 	
 	/**
 	 * Prep {if var IN (array)} conditionals
+	 * 
+	 * Used with the permission of Lodewijk Schutte
+	 * http://gotolow.com/addons/low-search
 	 *
 	 * @access private
 	 * @param string $tagdata
@@ -772,8 +804,6 @@ class Wires {
 				$andor	 = $matches[6][$key] ? ' AND ' : ' OR ';
 				$items	 = preg_replace('/(&(amp;)?)+/', '|', $matches[7][$key]);
 				$cond	 = array();
-
-				#echo $items;
 
 				foreach (explode('|', $items) as $right)
 				{
@@ -811,167 +841,7 @@ class Wires {
 
 		return $template;
 	}
-	
-	// usage instructions
-	public function usage() 
-	{
-  		ob_start();
-?>
--------------------
-HOW TO USE
--------------------
-
-{!-- 
-Generate and cache a list of categories, with Stash.
-We'll use to output options in the form and map category ids to category url titles 
---}
-{exp:stash:set_list name="categories" parse_tags="yes" save="yes" scope="site" replace="no" refresh="0"}  
-	{exp:channel:categories channel="products" style="linear" category_group="2"}
-		{stash:category_id}{category_id}{/stash:category_id}
-		{stash:category_url_title}{category_url_title}{/stash:category_url_title}
-		{stash:category_name}{category_name}{/stash:category_name}
-	{/exp:channel:categories}
-{/exp:stash:set_list}
-
-{!-- connect the wires --}
-{exp:wires 
-	url="products/search/{category}/{price}/{color}/{order_by}/{sort}/?search={search}" 
-	prefix="search"
-	parse="inward"
-	
-	{!-- 'category' --}
-	+category="multiple"
-	+category:match="#^[0-9]+$#"
-	+category:default_in="any"
-	+category:default_out=""
-	+category:delimiter_in="-or-"
-	+category:delimiter_out="|"
-	+category:map="{exp:stash:get_list name='categories' backspace='1'}{category_url_title}:{category_id};{/exp:stash:get_list}"
-
-	{!-- 'price' (price_min and price_max fields) --}
-	+price="range"
-	+price:default_in="any-price"
-	+price:default_out=""
-	+price:delimiter_in="-to-"
-	+price:delimiter_out=";"
-	+price:from="at-least-"
-	+price:to="at-most-"
-
-	{!-- 'color' --}
-	+color="single"
-	+color:match="#^[A-Za-z-_ ]+$#"
-	+color:default_in="any"
-	+color:default_out=""
-
-	{!-- 'search' --}
-	+search="single"
-	+search:default_in=""
-	+search:default_out=""
-
-    {!-- 'orderby' --}
-    +orderby="single"
-    +orderby:match="#^title$|^price$#"
-    +orderby:default_in="sort_by_price"
-    +orderby:default_out="price"
-    +orderby:map="sort_by_title:title;sort_by_price:price"
-
-    {!-- 'sort' --}
-    +sort="single"
-    +sort:match="#^asc$|^desc$#"
-    +sort:default_in="asc"
-    +sort:default_out="asc"
 }
-	<form action="" method="post">
 
-		<fieldset>
-
-			<label for="category">Category</label>
-			<select name="category[]" id="category" multiple="multiple">
-			{exp:stash:get_list name="categories" scope="site"} 
-			   	<option value="{category_id}"{if category_id IN ({category})} selected="selected"{/if}>{category_name}</option>
-			{/exp:stash:get_list}
-			</select>
-
-			<label for="price_min">Min price</label>
-			<select name="price_min" id="price_min">
-				<option value="100"{if "100" == "{price_min}"} selected="selected"{/if}>100</option>
-				<option value="200"{if "200" == "{price_min}"} selected="selected"{/if}>200</option>
-				<option value="300"{if "200" == "{price_min}"} selected="selected"{/if}>300</option>
-			</select>
-
-			<label for="price_max">Max price</label>
-			<select name="price_max" id="price_max">
-				<option value="100"{if "100" == "{price_max}"} selected="selected"{/if}>100</option>
-				<option value="200"{if "200" == "{price_max}"} selected="selected"{/if}>200</option>
-				<option value="300"{if "300" == "{price_max}"} selected="selected"{/if}>300</option>
-			</select>
-
-			<label for="color">Color</label>
-			<select name="color" id="color">
-				<option value="red"{if "red" == "{color}"} selected="selected"{/if}>Red</option>
-				<option value="blue"{if "blue" == "{color}"} selected="selected"{/if}>Blue</option>
-				<option value="green"{if "green" == "{color}"} selected="selected"{/if}>Green</option>
-			</select>
-
-			<label for="search">Search</label>
-			<input type="text" name="search" id="search" value="{search}">
-
-			<label for="orderby">Order by</label>
-			<select name="orderby" id="orderby">
-				<option value="price"{if "price" == "{orderby}"} selected="selected"{/if}>Price</option>
-				<option value="title"{if "title" == "{orderby}"} selected="selected"{/if}>Title</option>
-			</select>
-
-			<label for="sort">Sort</label>
-			<select name="sort" id="sort">
-				<option value="asc"{if "asc" == "{sort}"} selected="selected"{/if}>Ascending</option>
-				<option value="desc"{if "desc" == "{sort}"} selected="selected"{/if}>Descending</option>
-			</select>
-
-		</fieldset>
-
-	</form>
-
-	{exp:low_search:results 
-        collection="products"
-        category = "{category}"
-        range:cf_price = "{price}"
-        search:cf_color = "{color}"
-        keywords = "{search}"
-        orderby="{orderby}"
-        sort="{sort}"
-        limit="10"
-        status="open"
-        disable="member_data"
-    }
-        {if search:no_results}
-            No results
-        {/if}
-        {if search:count==1}
-        <table class="results">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-            <tbody>
-        {/if}
-                <tr class="results-row{search:switch='|-alt'}">
-                    <td><a href="{title_permalink='products'}">{title}</a></td>
-                    <td>{cf_price}</td>
-                </tr>
-        {if search:count==search:total_results}    
-            </tbody>
-        </table>
-        {/if}
-
-    {/exp:low_search:results}
-{/exp:wires}
-
-	<?php
-		$buffer = ob_get_contents();
-		ob_end_clean();
-		return $buffer;
-	}	
-}
+/* End of file mod.wires.php */
+/* Location: ./system/expressionengine/third_party/wires/mod.wires.php */

@@ -42,7 +42,10 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 
 		{!-- connect the wires --}
 		{exp:wires 
-			url="products/search/{category}/{price}/{color}/{order_by}/{sort}/?search={search}" 
+			url="/products/search/{category}/{price}/{color}/{order_by}/{sort}/?search={search}" 
+			action="/products/search"
+			id="search"
+			form_class="search"
 			prefix="search"
 			parse="inward"
 			

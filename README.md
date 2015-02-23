@@ -46,6 +46,7 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 			url="/products/search/{category}/{price}/{color}/{order_by}/{sort}/?search={search}" 
 			action="/products/search"
 			id="search"
+			form="no"
 			prefix="search"
 			parse="inward"
 			

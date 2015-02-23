@@ -24,7 +24,8 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 
 ##Tags:
 
-* {exp:wires}
+* {exp:wires:connect}
+* {exp:wires:url}
 
 ##Advanced example:
 
@@ -41,7 +42,7 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 		{/exp:stash:set_list}
 
 		{!-- connect the wires --}
-		{exp:wires:form 
+		{exp:wires:connect 
 			url="/products/search/{category}/{price}/{color}/{order_by}/{sort}/?search={search}" 
 			action="/products/search"
 			id="search"
@@ -176,4 +177,4 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 		        </table>
 		        {/if}
 		    {/exp:low_search:results}
-		{/exp:wires:form}
+		{/exp:wires:connect}

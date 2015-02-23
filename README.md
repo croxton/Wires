@@ -178,3 +178,15 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 		        {/if}
 		    {/exp:low_search:results}
 		{/exp:wires:connect}
+		
+	
+### Generating filter urls:
+	
+	Filter results by:
+	<a rel="nofollow" href="{exp:wires:url id='search' +category='123'}">Category 123</a>
+
+	Or
+
+	You have selected:
+	<a rel="nofollow" href="{exp:wires:url id='search' +category='123' remove='y'}">Category 123</a>
+

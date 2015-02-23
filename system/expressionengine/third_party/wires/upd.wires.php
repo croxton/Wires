@@ -12,7 +12,7 @@
 class Wires_upd {
     
     public $name    = 'Wires';
-    public $version = '1.0.1';
+    public $version = '2.0.0';
     
     /**
      * Stash_upd

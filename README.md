@@ -2,7 +2,7 @@
 
 * Author: [Mark Croxton](http://hallmark-design.co.uk/)
 
-## Version 1.0.1 (beta)
+## Version 2.0.0 (beta)
 
 * Requires: ExpressionEngine 2
 
@@ -41,7 +41,7 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 		{/exp:stash:set_list}
 
 		{!-- connect the wires --}
-		{exp:wires 
+		{exp:wires:form 
 			url="/products/search/{category}/{price}/{color}/{order_by}/{sort}/?search={search}" 
 			action="/products/search"
 			id="search"
@@ -98,7 +98,7 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 					<label for="category">Category</label>
 					<select name="category[]" id="category" multiple="multiple">
 					{exp:stash:get_list name="categories" scope="site"} 
-					   	<option value="{category_id}"{if category_id IN ({category})} selected="selected"{/if}>{category_name}</option>
+					   	<option value="{category_id}"{if category_id ~ '/(^|\|)'.category.'($|\|)/'} selected="selected"{/if}>{category_name}</option>
 					{/exp:stash:get_list}
 					</select>
 
@@ -176,4 +176,4 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 		        </table>
 		        {/if}
 		    {/exp:low_search:results}
-		{/exp:wires}
+		{/exp:wires:form}

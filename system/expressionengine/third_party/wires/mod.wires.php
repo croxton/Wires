@@ -220,15 +220,23 @@ class Wires {
 			}	
 		}
 
-		// fill in any empty values with defaults
-		// if default="y", reset non-specified fields with default values too
+		// prepare field data
 		foreach($data as $field => &$value) 
 		{
+			// fill in any empty values with defaults
+			// if default="y", reset non-specified fields with default values too
 			if ( (($default && ! isset($fields[$field])) || $value == "") 
 				&& isset(self::$cache[$this->id]['fields'][$field]['default_in']) )
 			{
 				$value = self::$cache[$this->id]['fields'][$field]['default_in'];
 			}
+
+			// we'll always strip out these characters
+			$bad	= array("\r", "\n", LD, RD, '&lt;?', '?&gt;');
+			$value	= str_replace($bad, '', $value);
+
+			// make sure values are safely url encoded
+			$value = rawurlencode($value);
 		}
 		unset($value);
 
@@ -582,8 +590,6 @@ class Wires {
 
 		// add base url and components to our view data
 		$view[0] += array('url_path' => $url_path);
-
-		#print_r($view);
 
 		// cache the view data and parameters for use by separate other tags
 		self::$cache[$this->id] += array(

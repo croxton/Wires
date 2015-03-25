@@ -80,7 +80,8 @@ class Wires {
 			// url
 			if (FALSE == $url = $this->EE->TMPL->fetch_param('url', FALSE))
 			{
-				$this->EE->output->show_user_error('general', 'The url parameter is required');
+				#$this->EE->output->show_user_error('general', 'The url parameter is required');
+				return $this->EE->TMPL->tagdata; // fail gracefully
 			}
 
 			// parse {site_url} and {base_url}

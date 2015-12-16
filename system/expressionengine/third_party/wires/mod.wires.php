@@ -279,6 +279,9 @@ class Wires {
 			}
 		}
 
+		// cleanup the query string, removing any empty arguments
+		$url = $this->_cleanup_url($url);
+
 		return $url;
 	}
 	

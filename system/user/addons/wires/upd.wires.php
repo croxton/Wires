@@ -1,28 +1,27 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Wire up your forms to your URI segments.
+ * Wire up your forms to URI segments.
  *
  * @package             Wires
  * @author              Mark Croxton (mcroxton@hallmark-design.co.uk)
- * @copyright           Copyright (c) 2013 Hallmark Design
+ * @copyright           Copyright (c) 2018 Hallmark Design
  * @link                http://hallmark-design.co.uk
  */
 
 class Wires_upd {
     
     public $name    = 'Wires';
-    public $version = '2.0.2';
+    public $version = '3.0.0';
     
     /**
-     * Stash_upd
+     * constructor
      * 
      * @access  public
      * @return  void
      */
     public function __construct()
     {
-        $this->EE = get_instance();
     }
     
     /**
@@ -36,7 +35,7 @@ class Wires_upd {
         $sql = array();
         
         // install module 
-        $this->EE->db->insert(
+        ee()->db->insert(
             'modules',
             array(
                 'module_name' => $this->name,
@@ -57,14 +56,14 @@ class Wires_upd {
      */
     public function uninstall()
     {
-        $query = $this->EE->db->get_where('modules', array('module_name' => 'Wires'));
+        $query = ee()->db->get_where('modules', array('module_name' => 'Wires'));
         
         if ($query->row('module_id'))
         {
-            $this->EE->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
+            ee()->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
         }
 
-        $this->EE->db->where('module_name', 'Wires')->delete('modules');
+        ee()->db->where('module_name', 'Wires')->delete('modules');
 
         return TRUE;
     }
@@ -90,4 +89,4 @@ class Wires_upd {
 }
 
 /* End of file upd.wires.php */
-/* Location: ./system/expressionengine/third_party/wires/upd.stash.php */
+/* Location: ./system/user/addons/wires/upd.stash.php */

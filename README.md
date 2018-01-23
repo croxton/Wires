@@ -1,10 +1,10 @@
-#Wires
+# Wires
 
 * Author: [Mark Croxton](http://hallmark-design.co.uk/)
 
-## Version 2.0.2 (beta)
+## Version 3.0.0
 
-* Requires: ExpressionEngine 2
+* Requires: ExpressionEngine 2, 3 or 4
 
 ## Description
 
@@ -15,19 +15,30 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 * Map form fields to URI segments and query strings
 * Re-populate your form fields from the URI
 * Safety first: validate and sanitize user-submitted data with regular expressions 
-* Use with Stash and Low Search to create advanced ecommerce style filtering
+* Use with Stash and Low Search to create multi-faceted navigation
 
 ## Installation
 
-1. [Download Wires](https://github.com/croxton/Wires/archive/master.zip) and un-zip
-2. Move the folder 'wires' into ./system/expressionengine/third_party/
+### Installation
 
-##Tags:
+[Download Wires](https://github.com/croxton/Wires/archive/dev.zip) and un-zip
+
+#### ExpressionEngine 2.x
+
+Move the folder `./system/user/addons/wires` into the `./system/expressionengine/third_party/` directory.
+
+#### ExpressionEngine 3.x and 4.x
+
+Move the folder `./system/user/addons/wires` into the `./system/user/addons` directory.
+
+
+
+## Tags:
 
 * {exp:wires:connect}
 * {exp:wires:url}
 
-##Advanced example:
+## Advanced example:
 
 		{!-- 
 		Generate and cache a list of categories, with Stash.
@@ -96,6 +107,12 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 
 				<fieldset>
 
+					{!-- CSRF token is required, unless disabled in your config --}
+					<input type="hidden" name="csrf_token" value="{csrf_token}">
+
+					{!-- The form ID is required if we're adding the form open and close tags manually (form="no") --}
+					<input type="hidden" name="id" value="search">
+
 					<label for="category">Category</label>
 					<select name="category[]" id="category" multiple="multiple">
 					{exp:stash:get_list name="categories" scope="site"} 
@@ -105,23 +122,23 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 
 					<label for="price_min">Min price</label>
 					<select name="price_min" id="price_min">
-						<option value="100"{if "100" == "{price_min}"} selected="selected"{/if}>100</option>
-						<option value="200"{if "200" == "{price_min}"} selected="selected"{/if}>200</option>
-						<option value="300"{if "200" == "{price_min}"} selected="selected"{/if}>300</option>
+						<option value="100"{if 100 == price_min} selected="selected"{/if}>100</option>
+						<option value="200"{if 200 == price_min} selected="selected"{/if}>200</option>
+						<option value="300"{if 300 == price_min} selected="selected"{/if}>300</option>
 					</select>
 
 					<label for="price_max">Max price</label>
 					<select name="price_max" id="price_max">
-						<option value="100"{if "100" == "{price_max}"} selected="selected"{/if}>100</option>
-						<option value="200"{if "200" == "{price_max}"} selected="selected"{/if}>200</option>
-						<option value="300"{if "300" == "{price_max}"} selected="selected"{/if}>300</option>
+						<option value="100"{if 100 == price_max} selected="selected"{/if}>100</option>
+						<option value="200"{if 200 == price_max} selected="selected"{/if}>200</option>
+						<option value="300"{if 300 == price_max} selected="selected"{/if}>300</option>
 					</select>
 
 					<label for="color">Color</label>
 					<select name="color" id="color">
-						<option value="red"{if "red" == "{color}"} selected="selected"{/if}>Red</option>
-						<option value="blue"{if "blue" == "{color}"} selected="selected"{/if}>Blue</option>
-						<option value="green"{if "green" == "{color}"} selected="selected"{/if}>Green</option>
+						<option value="red"{if "red" == color} selected="selected"{/if}>Red</option>
+						<option value="blue"{if "blue" == color} selected="selected"{/if}>Blue</option>
+						<option value="green"{if "green" == color} selected="selected"{/if}>Green</option>
 					</select>
 
 					<label for="search">Search</label>
@@ -129,14 +146,14 @@ Wire up your forms to URI segments. Search, filter sort and order entries with c
 
 					<label for="orderby">Order by</label>
 					<select name="orderby" id="orderby">
-						<option value="price"{if "price" == "{orderby}"} selected="selected"{/if}>Price</option>
-						<option value="title"{if "title" == "{orderby}"} selected="selected"{/if}>Title</option>
+						<option value="price"{if "price" == orderby} selected="selected"{/if}>Price</option>
+						<option value="title"{if "title" == orderby} selected="selected"{/if}>Title</option>
 					</select>
 
 					<label for="sort">Sort</label>
 					<select name="sort" id="sort">
-						<option value="asc"{if "asc" == "{sort}"} selected="selected"{/if}>Ascending</option>
-						<option value="desc"{if "desc" == "{sort}"} selected="selected"{/if}>Descending</option>
+						<option value="asc"{if "asc" == sort} selected="selected"{/if}>Ascending</option>
+						<option value="desc"{if "desc" == sort} selected="selected"{/if}>Descending</option>
 					</select>
 
 				</fieldset>

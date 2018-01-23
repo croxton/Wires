@@ -1,17 +1,16 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Wire up your forms to your URI segments. Search and filter entries with clean, readable uris.
+ * Wire up your forms to URI segments. Search and filter entries with clean, readable uris.
  *
  * @package             Wires
  * @author              Mark Croxton (mcroxton@hallmark-design.co.uk)
- * @copyright           Copyright (c) 2013 Hallmark Design
+ * @copyright           Copyright (c) 2018 Hallmark Design
  * @link                http://hallmark-design.co.uk
  */
 
 class Wires {
 	
-	public $EE;
 	public $return_data = '';
 
 	protected $map_delimter = ":";
@@ -30,12 +29,10 @@ class Wires {
 	 */
 	public function __construct() 
 	{
-		$this->EE = get_instance();
-
 		// a unique ID for the form
-		if (FALSE === $this->id = $this->EE->TMPL->fetch_param('id', $this->id))
+		if (FALSE === $this->id = ee()->TMPL->fetch_param('id', $this->id))
 		{
-			$this->EE->output->show_user_error('general', 'The id parameter is required');
+			ee()->output->show_user_error('general', 'The id parameter is required');
 		}
 	}
 
@@ -61,12 +58,12 @@ class Wires {
 		else
 		{	
 			// do we want to use an earlier (cached) wires tag's parameters?
-			if ($use = $this->EE->TMPL->fetch_param('use', FALSE))
+			if ($use = ee()->TMPL->fetch_param('use', FALSE))
 			{
 				if (isset(self::$cache[$use]))
 				{
 					// merge in the previous tags params, allowing them to be overridden by the current tag
-					$this->EE->TMPL->tagparams = array_merge(self::$cache[$use]['params'], $this->EE->TMPL->tagparams);
+					ee()->TMPL->tagparams = array_merge(self::$cache[$use]['params'], ee()->TMPL->tagparams);
 				}
 			}
 
@@ -78,10 +75,10 @@ class Wires {
 			$this->ee_uri->_reindex_segments();
 
 			// url
-			if (FALSE == $url = $this->EE->TMPL->fetch_param('url', FALSE))
+			if (FALSE == $url = ee()->TMPL->fetch_param('url', FALSE))
 			{
-				#$this->EE->output->show_user_error('general', 'The url parameter is required');
-				return $this->EE->TMPL->tagdata; // fail gracefully
+				#ee()->output->show_user_error('general', 'The url parameter is required');
+				return ee()->TMPL->tagdata; // fail gracefully
 			}
 
 			// parse {site_url} and {base_url}
@@ -105,13 +102,13 @@ class Wires {
 	public function url() 
 	{
 		// add or remove from the uri?
-		$remove = (bool) preg_match('/1|on|yes|y/i', $this->EE->TMPL->fetch_param('remove', 'no'));
+		$remove = (bool) preg_match('/1|on|yes|y/i', ee()->TMPL->fetch_param('remove', 'no'));
 
 		// reset unspecified fields with their default values?
-		$default = (bool) preg_match('/1|on|yes|y/i', $this->EE->TMPL->fetch_param('default', 'no'));
+		$default = (bool) preg_match('/1|on|yes|y/i', ee()->TMPL->fetch_param('default', 'no'));
 
 		// relative url? (default YES)
-		$relative = (bool) preg_match('/1|on|yes|y/i', $this->EE->TMPL->fetch_param('relative', 'y'));
+		$relative = (bool) preg_match('/1|on|yes|y/i', ee()->TMPL->fetch_param('relative', 'y'));
 
 		// the url template
 		$template = self::$cache[$this->id]['params']['url'];
@@ -122,7 +119,7 @@ class Wires {
 		// the fields we want to replace into the url
 		$fields = array();
 
-		foreach ($this->EE->TMPL->tagparams as $key => $value)
+		foreach (ee()->TMPL->tagparams as $key => $value)
 		{
 			if (strncmp($key, '+', 1) == 0)
 			{
@@ -259,7 +256,7 @@ class Wires {
 		if (FALSE === isset($this->url['url_scheme']) || FALSE === isset($this->url['url_host']))
 		{
 			// add the scheme/host from config values
-			$url = $this->EE->functions->create_url($url);
+			$url = ee()->functions->create_url($url);
 		}
 
 		// make relative?
@@ -305,10 +302,10 @@ class Wires {
 		}
 
 		// form action, default to current url
-		$this->action = $this->EE->TMPL->fetch_param('action', '{current_url}');
+		$this->action = ee()->TMPL->fetch_param('action', '{current_url}');
 
 		// get the field parameters
-		$f = $this->_get_field_params($this->EE->TMPL->tagparams);
+		$f = $this->_get_field_params(ee()->TMPL->tagparams);
 
 		// setup a cache that later-parsed tags can use
 		self::$cache[$this->id] = array(
@@ -317,7 +314,7 @@ class Wires {
 		);
 
 		// has the form been posted?
-		$id = $this->EE->input->post('id');
+		$id = ee()->input->post('id');
 
 		if ($id === $this->id)
 		{	
@@ -331,7 +328,7 @@ class Wires {
 			if (FALSE === isset($this->url['url_scheme']) || FALSE === isset($this->url['url_host']))
 			{
 				// add the scheme/host from config values
-				$url = $this->EE->functions->create_url($url);
+				$url = ee()->functions->create_url($url);
 			}
 			else
 			{
@@ -369,7 +366,7 @@ class Wires {
 			}
 
 			// redirect to the url
-			$this->EE->functions->redirect($url);
+			ee()->functions->redirect($url);
 
 		}
 		else
@@ -404,7 +401,7 @@ class Wires {
 				// segment uri character restrictions
 				if (count($_GET) > 0 && FALSE === $field['segment'])
 				{
-					$field['value'] = $this->EE->input->get($key);
+					$field['value'] = ee()->input->get($key);
 				}
 
 				// make corresponding _min and _max fields for a range field
@@ -532,10 +529,10 @@ class Wires {
 						$extra['__'. $key . '__']['value'] = implode('|', $field['value']);
 
 						// prep template tagdata - replaced {if.. IN({field})} with {if.. IN({__field__})}
-						$this->EE->TMPL->tagdata = str_replace(
+						ee()->TMPL->tagdata = str_replace(
 							'IN ('. LD . $key . RD . ')', 
 							'IN ('. LD . '__' . $key . '__' . RD . ')', 
-							$this->EE->TMPL->tagdata
+							ee()->TMPL->tagdata
 						);
 
 						// escape for displaying safely in html
@@ -595,17 +592,17 @@ class Wires {
 		// cache the view data and parameters for use by separate other tags
 		self::$cache[$this->id] += array(
 			'view' 	 => $view,
-			'params' => $this->EE->TMPL->tagparams
+			'params' => ee()->TMPL->tagparams
 		);
 
 		// parse template?
 		$output = '';
-		$render_output = (bool) preg_match('/1|on|yes|y/i', $this->EE->TMPL->fetch_param('output', '1'));
+		$render_output = (bool) preg_match('/1|on|yes|y/i', ee()->TMPL->fetch_param('output', '1'));
 
 		if ($render_output)
 		{
 			// do we want to wrap the output with a form?
-			$form = (bool) preg_match('/1|on|yes|y/i', $this->EE->TMPL->fetch_param('form', '1'));
+			$form = (bool) preg_match('/1|on|yes|y/i', ee()->TMPL->fetch_param('form', '1'));
 
 			$output = $this->_parse_view($view, $form);
 		}
@@ -624,11 +621,11 @@ class Wires {
 	 */ 
 	protected function _parse_view($view, $form=FALSE)
 	{
-		$prefix	= $this->EE->TMPL->fetch_param('prefix');
-		$output = $this->EE->TMPL->tagdata;
+		$prefix	= ee()->TMPL->fetch_param('prefix');
+		$output = ee()->TMPL->tagdata;
 
 		// parse template variables
-		$output = $this->EE->TMPL->parse_variables($output, $view);
+		$output = ee()->TMPL->parse_variables($output, $view);
 
 		// prep IN conditionals
 		$output = $this->_prep_in_conditionals($output);
@@ -646,12 +643,12 @@ class Wires {
 			    'action'          => $this->action,
 			    'name'            => 'upload',
 			    'hidden_fields'   => array('id' => $this->id),
-			    'id'           	  => $this->EE->TMPL->form_id,
-			    'class'           => $this->EE->TMPL->form_class,
+			    'id'           	  => ee()->TMPL->form_id,
+			    'class'           => ee()->TMPL->form_class,
 			    'secure'          => TRUE
 			);
 
-			$form_open = $this->EE->functions->form_declaration($form_details);
+			$form_open = ee()->functions->form_declaration($form_details);
 			$form_close = "</form>";
 			$output  = $form_open . $output . $form_close;
 		}
@@ -826,7 +823,7 @@ class Wires {
 	{
 		if ($dynamic)
 		{
-			$field = $this->EE->input->get_post($field, TRUE);
+			$field = ee()->input->get_post($field, TRUE);
 		}
 		
 		$pass = TRUE;
@@ -1263,4 +1260,4 @@ class Wires {
 }
 
 /* End of file mod.wires.php */
-/* Location: ./system/expressionengine/third_party/wires/mod.wires.php */
+/* Location: ./system/user/addons/wires/mod.wires.php */

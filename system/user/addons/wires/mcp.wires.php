@@ -1,11 +1,11 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Wire up your forms to your URI segments.
+ * Wire up your forms to URI segments.
  *
  * @package             Wires
  * @author              Mark Croxton (mcroxton@hallmark-design.co.uk)
- * @copyright           Copyright (c) 2013 Hallmark Design
+ * @copyright           Copyright (c) 2018 Hallmark Design
  * @link                http://hallmark-design.co.uk
  */
 
@@ -19,7 +19,6 @@ class Wires_mcp {
      */
     public function __construct() 
     {
-        $this->EE = get_instance();
     }
     
     /**
@@ -34,4 +33,4 @@ class Wires_mcp {
 }
 
 /* End of file mcp.stash.php */
-/* Location: ./system/expressionengine/third_party/wires/mcp.wires.php */
+/* Location: ./system/user/addons/wires/mcp.wires.php */
